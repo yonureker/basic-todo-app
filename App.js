@@ -8,40 +8,37 @@ import {
   TextInput,
   FlatList
 } from "react-native";
-import GoalItem from './components/GoalItem'
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
-  const [enteredGoal, setEnteredGoal] = useState("");
   const [goalList, setGoalList] = useState([]);
 
-  const inputHandler = inputText => {
-    setEnteredGoal(inputText);
-  };
-
-  const buttonSubmitHandler = () => {
+  const addGoalHandler = goalTitle => {
     setGoalList(currentGoals => [
       ...currentGoals,
-      { id: Math.random().toString(), value: enteredGoal }
+      { id: Math.random().toString(), value: goalTitle }
     ]);
+  };
+
+  const removeGoalHandler = goalId => {
+    setGoalList(currentGoals => {
+      return currentGoals.filter(goal => goal.id !== goalId);
+    });
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputRow}>
-        <TextInput
-          placeholder="Course Goal"
-          style={styles.textInput}
-          onChangeText={inputHandler}
-          value={enteredGoal}
-        />
-        <Button title="ADD" onPress={buttonSubmitHandler} />
-      </View>
-
+      <GoalInput onAddGoal={addGoalHandler} />
       <FlatList
         keyExtractor={(item, index) => item.id}
         data={goalList}
         renderItem={itemData => (
-          
+          <GoalItem
+            id={itemData.item.id}
+            onDelete={removeGoalHandler}
+            title={itemData.item.value}
+          />
         )}
       ></FlatList>
     </View>
@@ -51,23 +48,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     padding: 50
-  },
-  textInput: {
-    borderColor: "black",
-    borderWidth: 1,
-    padding: 10,
-    width: "80%"
-  },
-  inputRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center"
-  },
-  listItem: {
-    padding: 10,
-    backgroundColor: "#ccc",
-    borderColor: "black",
-    borderWidth: 1,
-    margin: 0
   }
 });
